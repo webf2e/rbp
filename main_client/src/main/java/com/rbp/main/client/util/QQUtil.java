@@ -1,8 +1,6 @@
 package com.rbp.main.client.util;
 
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
  * Created by liuwenbin on 2017/9/11.
@@ -10,10 +8,16 @@ import java.text.SimpleDateFormat;
 public class QQUtil {
 
     public static void sendMessage(String message) throws Exception{
-        ShellUtil.run("java RobotUtil \"" + message + "\"");
+        List<String> lines = ShellUtil.run("java RobotUtil \"" + message + "\"");
+        for(String line : lines){
+            System.out.println(line);
+        }
     }
 
     public static void sendImgMessage(String imgPath) throws Exception{
-        ShellUtil.run("java RobotImgUtil \"" + imgPath + "\"");
+        List<String> lines = ShellUtil.run("java RobotImgUtil \"" + imgPath + "\"");
+        for(String line : lines){
+            System.out.println(line);
+        }
     }
 }
