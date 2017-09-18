@@ -16,10 +16,15 @@ public class RobotUtil {
         System.out.println(height);
         Robot robot = new Robot();
         //显示桌面
-        robot.mouseMove(width,height);
-        robot.mousePress(KeyEvent.BUTTON1_MASK);
-        robot.mouseRelease(KeyEvent.BUTTON1_MASK);
-        System.out.println("show desktop");
+//        robot.mouseMove(width,height);
+//        robot.mousePress(KeyEvent.BUTTON1_MASK);
+//        robot.mouseRelease(KeyEvent.BUTTON1_MASK);
+//        System.out.println("show desktop");
+//        Thread.sleep(200);
+        robot.keyPress(KeyEvent.VK_WINDOWS);
+        robot.keyPress(KeyEvent.VK_D);
+        robot.keyRelease(KeyEvent.VK_WINDOWS);
+        robot.keyRelease(KeyEvent.VK_D);
         Thread.sleep(200);
         //双击图标,打开对话框
         robot.mouseMove(width-40,40);

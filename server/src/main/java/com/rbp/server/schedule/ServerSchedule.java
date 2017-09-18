@@ -113,6 +113,11 @@ public class ServerSchedule {
             message += "| |";
             message += iciDaily.getNote();
             System.out.println(message);
+            try{
+                messageService.setImgMessage(iciDaily.getPicture());
+            }catch(Exception e){
+                e.printStackTrace();
+            }
             messageService.setMessage(message);
             //保存到数据库中
             DailyMessage dailyMessage = new DailyMessage();
@@ -137,8 +142,12 @@ public class ServerSchedule {
             String message = "天气| |"+weather.getInfo()+"|温度: " + weather.getTemperature()+"|湿度: "+weather.getHumidity()+"|";
             message += "降水: " + weather.getRain();
             System.out.println(message);
+            try{
+                messageService.setImgMessage(weather.getImg());
+            }catch(Exception e){
+                e.printStackTrace();
+            }
             messageService.setMessage(message);
-            messageService.setImgMessage(weather.getImg());
             //保存到数据库中
             WeatherMessage weatherMessage = new WeatherMessage();
             weatherMessage.setImg(weather.getImg());
