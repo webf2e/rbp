@@ -16,8 +16,8 @@
 
             <!-- Nav tabs -->
             <ul class="nav nav-tabs" role="tablist">
-                <li role="presentation" class="active"><a href="#fan" aria-controls="fan" role="tab" data-toggle="tab">风扇</a></li>
-                <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a></li>
+                <li role="presentation" class="active"><a href="#fan" aria-controls="fan" role="tab" data-toggle="tab">风扇控制</a></li>
+                <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">消息发送</a></li>
                 <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>
                 <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li>
             </ul>
@@ -27,7 +27,14 @@
                 <div role="tabpanel" class="tab-pane active" id="fan">
 
                 </div>
-                <div role="tabpanel" class="tab-pane" id="profile">...2</div>
+                <div role="tabpanel" class="tab-pane" id="profile">
+                    <input id="message" class="form-control" width="100%"/>
+                    <select id="messageTypeSelect" class="form-control">
+                        <option value="message">文本</option>
+                        <option value="image">图片</option>
+                    </select>
+                    <button id="sendMessageBtn" class="btn btn-primary">发送</button>
+                </div>
                 <div role="tabpanel" class="tab-pane" id="messages">...3</div>
                 <div role="tabpanel" class="tab-pane" id="settings">...4</div>
             </div>
@@ -58,5 +65,15 @@
     function closeFan(fanName){
         alert("close:" + fanName);
     }
+    $("#sendMessageBtn").click(function(){
+        $.ajax({
+            url:"/rbp/sendMessage",
+            data:"m="+encodeURI($("#message").val())+"&t="+$("#messageTypeSelect").val(),
+            type:"POST",
+            success:function(data){
+                alert(data);
+            }
+        });
+    });
 </script>
 </html>

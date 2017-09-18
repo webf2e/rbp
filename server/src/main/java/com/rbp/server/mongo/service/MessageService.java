@@ -1,13 +1,10 @@
 package com.rbp.server.mongo.service;
 
 import com.google.gson.Gson;
-import com.rbp.server.mongo.bean.FanStat;
 import com.rbp.server.mongo.bean.Message;
 import com.rbp.server.service.ZookeeperService;
-import com.rbp.server.util.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -15,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -80,6 +76,14 @@ public class MessageService {
         }
         msg.setType("image");
         insert(msg);
+        String messageJson = null;
+        try{
+            messageJson = URLEncoder.encode(new Gson().toJson(msg),"UTF-8");
+            //messageJson
+            zookeeperService.createNewZnode(baseNode+"/message",messageJson,"PERSISTENT_SEQUENTIAL");
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void delete(Message message){

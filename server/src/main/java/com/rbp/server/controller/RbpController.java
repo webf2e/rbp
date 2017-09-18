@@ -225,12 +225,21 @@ public class RbpController {
     public String sendMessage(HttpServletRequest request,HttpServletResponse response){
         try{
             String message = request.getParameter("m");
+            String type = request.getParameter("t");
             if(null == message){
                 return  "message is null";
             }
+            if(null == type || "".equals(type)){
+                type = "message";
+            }
             message = URLDecoder.decode(message);
             System.out.println(message);
-            messageService.setMessage(message);
+            if(type.equals("message")){
+                messageService.setMessage(message);
+            }
+            if(type.equals("image")){
+                messageService.setImgMessage(message);
+            }
             return  "OK";
         }catch(Exception e){
             return e.getMessage();
