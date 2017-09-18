@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no">
+    <title>树莓派服务控制中心</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</head>
+<body>
+    <iframe style="border:0px;width:100%;height: 80px" src="nav.html"></iframe>
+    <div class="container" style="width: 80%;">
+        <div>
+
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a href="#fan" aria-controls="fan" role="tab" data-toggle="tab">风扇</a></li>
+                <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a></li>
+                <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>
+                <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="fan">
+
+                </div>
+                <div role="tabpanel" class="tab-pane" id="profile">...2</div>
+                <div role="tabpanel" class="tab-pane" id="messages">...3</div>
+                <div role="tabpanel" class="tab-pane" id="settings">...4</div>
+            </div>
+
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    $.ajax({
+        url:"/config/allFans",
+        type:"POST",
+        success:function(data){
+            if(data == ""){
+                location.href="/login.html?gb=config.html";
+                return;
+            }
+            var table = "<table class='table table-bordered' style='width:100%'>"
+            $.each(data,function(i,n){
+                table += "<tr><td>"+n+"</td><td><button onclick=\"openFan('"+n+"')\" class='btn btn-danger'>开启</button><button onclick=\"closeFan('"+n+"')\" class='btn btn-primary'>关闭</button></td></tr>";
+            });
+            table += "</table>";
+            $("#fan").html(table);
+        }
+    });
+    function openFan(fanName){
+        alert("open:" + fanName);
+    }
+    function closeFan(fanName){
+        alert("close:" + fanName);
+    }
+</script>
+</html>

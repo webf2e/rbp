@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/client/client.iml" filepath="$PROJECT_DIR$/client/client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gpio-demo/gpio-demo.iml" filepath="$PROJECT_DIR$/gpio-demo/gpio-demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/main_client/main_client.iml" filepath="$PROJECT_DIR$/main_client/main_client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/rbp.iml" filepath="$PROJECT_DIR$/.idea/rbp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/server/server.iml" filepath="$PROJECT_DIR$/server/server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/transferJar/transferJar.iml" filepath="$PROJECT_DIR$/transferJar/transferJar.iml" />
+    </modules>
+  </component>
+</project>

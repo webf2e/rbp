@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no">
+    <title>树莓派服务信息</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/echarts.min.js"></script>
+</head>
+<body>
+    <iframe style="border:0px;width:100%;height: 80px" src="nav.html"></iframe>
+    <div class="container" style="width: 80%;">
+        <select id="serverSelect" class="form-control">
+            <option value="main_stat.html">概述</option>
+            <option value="compare_stat.html" selected>对比</option>
+        </select>
+        <hr/>
+        <select id="statSelect" class="form-control">
+            <option value="0">CPU温度</option>
+            <option value="1">GPU温度</option>
+            <option value="2">CPU使用率</option>
+            <option value="3">已使用内存</option>
+            <option value="4">空闲内存</option>
+            <option value="5">可用内存</option>
+            <option value="6">磁盘已使用</option>
+            <option value="7">磁盘使用率</option>
+            <option value="8">1分钟平均负载</option>
+            <option value="9">5分钟平均负载</option>
+            <option value="10">15分钟平均负载</option>
+            <option value="11">入流量</option>
+            <option value="12">出流量</option>
+        </select>
+        <hr/>
+        <div id="tongji" style="width:100%;height:650px"></div>
+
+    </div>
+</body>
+<script type="text/javascript">
+    $("#serverSelect").change(function(){
+        location.href = $(this).val();
+    });
+    $.ajax({
+        url:"/page/servers",
+        type:"POST",
+        success:function(data){
+            $.each(data,function(i,n){
+                $("#serverSelect").append("<option value='server_stat.html?sn="+n.serverName+"'>"+n.serverName+"</option>");
+            });
+        }
+    });
+    var stat = null;
+    var dateTime = [];
+    var datas = [];
+    var title = null;
+    $.ajax({
+        url:"/page/compare",
+        type:"POST",
+        success:function(data){
+            stat = data;
+            $.each(data[0],function(i,n){
+                dateTime.push(n.dateTime);
+            });
+            changeStat(0);
+        }
+    });
+    $("#statSelect").change(function(){
+        var statIndex = $(this).val();
+        changeStat(statIndex);
+    });
+    function changeStat(statIndex){
+        datas = [];
+        title = null;
+        for(var i = 0; i < stat.length;i ++){
+            var temp = [];
+            $.each(stat[i],function(i,n){
+                if(0 == statIndex){
+                    title = "各个服务器 CPU 温度对比";
+                    temp.push(n.cpuTemp);
+                }else if(1 == statIndex){
+                    title = "各个服务器 GPU 温度对比";
+                    temp.push(n.gpuTemp);
+                }else if(2 == statIndex){
+                    title = "各个服务器 CPU 使用率对比";
+                    temp.push(n.cpuUse);
+                }else if(3 == statIndex){
+                    title = "各个服务器已使用内存对比";
+                    temp.push(n.memoryUsed);
+                }else if(4 == statIndex){
+                    title = "各个服务器空闲内存对比";
+                    temp.push(n.memoryFree);
+                }else if(5 == statIndex){
+                    title = "各个服务器可用内存对比";
+                    temp.push(n.memoryAvail);
+                }else if(6 == statIndex){
+                    title = "各个服务器磁盘已使用对比";
+                    temp.push(n.diskUsed);
+                }else if(7 == statIndex){
+                    title = "各个服务器磁盘使用率对比";
+                    temp.push(n.diskUsedPercent);
+                }else if(8 == statIndex){
+                    title = "各个服务器1分钟平均负载对比";
+                    temp.push(n.loadAverage1);
+                }else if(9 == statIndex){
+                    title = "各个服务器5分钟平均负载对比";
+                    temp.push(n.loadAverage5);
+                }else if(10 == statIndex){
+                    title = "各个服务器15分钟平均负载对比";
+                    temp.push(n.loadAverage15);
+                }else if(11 == statIndex){
+                    title = "各个服务器入流量对比";
+                    temp.push(n.netIn);
+                }else if(12 == statIndex){
+                    title = "各个服务器出流量对比";
+                    temp.push(n.netOut);
+                }
+            });
+            datas.push(temp);
+
+            var option = {
+                title: {
+                    text: title,
+                    subtext:''
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data:["Ras1","Ras2","Ras3","Ras4","Ras5"]
+                },
+                grid: {
+                    left: '1%',
+                    right: '0%',
+                    bottom: '10%',
+                    containLabel: true
+                },
+                toolbox: {
+                    show : true,
+                    orient: 'horizontal',      // 布局方式，默认为水平布局，可选为：
+                    x: 'right',                // 水平安放位置，默认为全图右对齐，可选为：
+                    y: 'top',                  // 垂直安放位置，默认为全图顶端，可选为：
+                    color : ['#1e90ff','#22bb22','#4b0082','#d2691e'],
+                    backgroundColor: 'rgba(0,0,0,0)', // 工具箱背景颜色
+                    borderColor: '#ccc',       // 工具箱边框颜色
+                    borderWidth: 0,            // 工具箱边框线宽，单位px，默认为0（无边框）
+                    padding: 5,                // 工具箱内边距，单位px，默认各方向内边距为5，
+                    showTitle: true,
+                    feature : {
+                        dataZoom : {
+                            show : true,
+                            title : {
+                                dataZoom : '区域缩放',
+                                dataZoomReset : '区域缩放-后退'
+                            }
+                        },
+                        magicType: {
+                            show : true,
+                            title : {
+                                line : '动态类型切换-折线图',
+                                bar : '动态类型切换-柱形图',
+                                stack : '动态类型切换-堆积',
+                            },
+                            type : ['line', 'bar', 'stack']
+                        },
+                        restore : {
+                            show : true,
+                            title : '还原',
+                            color : 'black'
+                        },
+                        saveAsImage : {
+                            show : true,
+                            title : '保存为图片',
+                            type : 'jpeg',
+                            lang : ['点击本地保存']
+                        },
+                    }
+                },
+                dataZoom : {
+                    show : true,
+                    realtime : true,
+                    y:620,
+                    start : 0,
+                    end : 999
+                },
+                xAxis: {
+                    type: 'category',
+                    data: dateTime
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [
+                    {
+                        name:'Ras1',
+                        type:'line',
+                        data:datas[0],
+                        itemStyle : {
+                            normal : {
+                                color:'#46b8da',
+                                lineStyle:{
+                                    color:'#46b8da'
+                                }
+                            }
+                        },
+                        animationDelay: function (idx) {
+                            return idx * 1 + 100;
+                        }
+                    },{
+                        name:'Ras2',
+                        type:'line',
+                        data:datas[1],
+                        itemStyle : {
+                            normal : {
+                                color:'#2e6da4',
+                                lineStyle:{
+                                    color:'#2e6da4'
+                                }
+                            }
+                        },
+                        animationDelay: function (idx) {
+                            return idx * 1 + 200;
+                        }
+                    },{
+                        name:'Ras3',
+                        type:'line',
+                        data:datas[2],
+                        itemStyle : {
+                            normal : {
+                                color:'#d43f3a',
+                                lineStyle:{
+                                    color:'#d43f3a'
+                                }
+                            }
+                        },
+                        animationDelay: function (idx) {
+                            return idx * 1 + 300;
+                        }
+                    },{
+                        name:'Ras4',
+                        type:'line',
+                        data:datas[3],
+                        itemStyle : {
+                            normal : {
+                                color:'#4cae4c',
+                                lineStyle:{
+                                    color:'#4cae4c'
+                                }
+                            }
+                        },
+                        animationDelay: function (idx) {
+                            return idx * 1 + 400;
+                        }
+                    },{
+                        name:'Ras5',
+                        type:'line',
+                        data:datas[4],
+                        itemStyle : {
+                            normal : {
+                                color:'#e78800',
+                                lineStyle:{
+                                    color:'#e78800'
+                                }
+                            }
+                        },
+                        animationDelay: function (idx) {
+                            return idx * 1 + 500;
+                        }
+                    }
+
+                ],
+                animationEasing: 'elasticOut',
+                animationDelayUpdate: function (idx) {
+                    return idx * 1 + 100;
+                }
+            };
+            echarts.init(document.getElementById("tongji")).setOption(option);
+        }
+    }
+</script>
+</html>

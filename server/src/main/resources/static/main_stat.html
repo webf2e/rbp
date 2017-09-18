@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>树莓派服务信息</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/echarts.min.js"></script>
+</head>
+<body>
+    <iframe style="border:0px;width:100%;height: 80px" src="nav.html"></iframe>
+    <div class="container" style="width: 80%;">
+        <select id="serverSelect" class="form-control">
+            <option value="main_stat.html">概述</option>
+            <option value="compare_stat.html">对比</option>
+        </select>
+        <hr/>
+        <div id="tempTongji" style="width:100%;height:350px"></div>
+        <hr/>
+        <div id="cpuTongji" style="width:100%;height:350px"></div>
+        <hr/>
+        <div id="memTongji" style="width:100%;height:350px"></div>
+        <hr/>
+        <div id="diskTongji" style="width:100%;height:350px"></div>
+        <hr/>
+        <div id="loadAverageTongji" style="width:100%;height:350px"></div>
+        <hr/>
+        <div id="netTongji" style="width:100%;height:350px"></div>
+        <hr/>
+        <div id="fanTongji" style="width:100%;height:350px"></div>
+        <hr/>
+    </div>
+</body>
+<script type="text/javascript">
+    $("#serverSelect").change(function(){
+        location.href = $(this).val();
+    });
+    $.ajax({
+        url:"/page/compareServers",
+        type:"POST",
+        success:function(data){
+            var updateTime = data[0].dateTime;
+            var servers = [];
+            var cpuTemp = [];
+            var gpuTemp = [];
+            var cpuUse = [];
+            var memoryUsed = [];
+            var memoryFree = [];
+            var memoryAvail = [];
+            var diskUsed = [];
+            var load1 = [];
+            var load5 = [];
+            var load15 = [];
+            var netIn = [];
+            var netOut = [];
+            $.each(data,function(i,n){
+                servers.push(n.serverName);
+                cpuTemp.push(n.cpuTemp);
+                gpuTemp.push(n.gpuTemp);
+                cpuUse.push(n.cpuUse);
+                memoryUsed.push(n.memoryUsed);
+                memoryFree.push(n.memoryFree);
+                memoryAvail.push(n.memoryAvail);
+                diskUsed.push(n.diskUsed);
+                load1.push(n.loadAverage1);
+                load5.push(n.loadAverage5);
+                load15.push(n.loadAverage15);
+                netIn.push(n.netIn);
+                netOut.push(n.netOut);
+                $("#serverSelect").append("<option value='server_stat.html?sn="+n.serverName+"'>"+n.serverName+"</option>");
+            });
+            var option = {
+                title: {
+                    text: '温度统计（单位: °C）',
+                    subtext: '更新时间：' + updateTime
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data:['CPU温度','GPU温度']
+                },
+                grid: {
+                    left: '1%',
+                    right: '0%',
+                    bottom: '10%',
+                    containLabel: true
+                },
+                toolbox: {
+                    show : true,
+                    orient: 'horizontal',      // 布局方式，默认为水平布局，可选为：
+                    x: 'right',                // 水平安放位置，默认为全图右对齐，可选为：
+                    y: 'top',                  // 垂直安放位置，默认为全图顶端，可选为：
+                    color : ['#1e90ff','#22bb22','#4b0082','#d2691e'],
+                    backgroundColor: 'rgba(0,0,0,0)', // 工具箱背景颜色
+                    borderColor: '#ccc',       // 工具箱边框颜色
+                    borderWidth: 0,            // 工具箱边框线宽，单位px，默认为0（无边框）
+                    padding: 5,                // 工具箱内边距，单位px，默认各方向内边距为5，
+                    showTitle: true,
+                    feature : {
+                        dataZoom : {
+                            show : true,
+                            title : {
+                                dataZoom : '区域缩放',
+                                dataZoomReset : '区域缩放-后退'
+                            }
+                        },
+                        magicType: {
+                            show : true,
+                            title : {
+                                line : '动态类型切换-折线图',
+                                bar : '动态类型切换-柱形图',
+                                stack : '动态类型切换-堆积',
+                            },
+                            type : ['line', 'bar', 'stack']
+                        },
+                        restore : {
+                            show : true,
+                            title : '还原',
+                            color : 'black'
+                        },
+                        saveAsImage : {
+                            show : true,
+                            title : '保存为图片',
+                            type : 'jpeg',
+                            lang : ['点击本地保存']
+                        },
+                    }
+                },
+                dataZoom : {
+                    show : true,
+                    realtime : true,
+                    y:320,
+                    start : 0,
+                    end : 999
+                },
+                xAxis: {
+                    type: 'category',
+                    //boundaryGap: false,
+                    data: servers
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [
+                    {
+                        name:'CPU温度',
+                        type:'bar',
+                        data:cpuTemp,
+                        itemStyle : {
+                            normal : {
+                                color:'#46b8da',
+                                lineStyle:{
+                                    color:'#46b8da'
+                                }
+                            }
+                        },
+                        animationDelay: function (idx) {
+                            return idx * 1;
+                        }
+                    },
+                    {
+                        name:'GPU温度',
+                        type:'bar',
+                        data:gpuTemp,
+                        itemStyle : {
+                            normal : {
+                                color:'#2e6da4',
+                                lineStyle:{
+                                    color:'#2e6da4'
+                                }
+                            }
+                        },
+                        animationDelay: function (idx) {
+                            return idx * 1 + 100;
+                        }
+                    }
+                ],
+                animationEasing: 'elasticOut',
+                animationDelayUpdate: function (idx) {
+                    return idx * 1;
+                }
+            };
+            echarts.init(document.getElementById("tempTongji")).setOption(option);
+
+            option = {
+                title: {
+                    text: 'CPU使用率统计',
+                    subtext: '更新时间：' + updateTime
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data:['CPU使用率']
+                },
+                grid: {
+                    left: '1%',
+                    right: '0%',
+                    bottom: '10%',
+                    containLabel: true
+                },
+                toolbox: {
+                    show : true,
+                    orient: 'horizontal',      // 布局方式，默认为水平布局，可选为：
+                    x: 'right',                // 水平安放位置，默认为全图右对齐，可选为：
+                    y: 'top',                  // 垂直安放位置，默认为全图顶端，可选为：
+                    color : ['#1e90ff','#22bb22','#4b0082','#d2691e'],
+                    backgroundColor: 'rgba(0,0,0,0)', // 工具箱背景颜色
+                    borderColor: '#ccc',       // 工具箱边框颜色
+                    borderWidth: 0,            // 工具箱边框线宽，单位px，默认为0（无边框）
+                    padding: 5,                // 工具箱内边距，单位px，默认各方向内边距为5，
+                    showTitle: true,
+                    feature : {
+                        dataZoom : {
+                            show : true,
+                            title : {
+                                dataZoom : '区域缩放',
+                                dataZoomReset : '区域缩放-后退'
+                            }
+                        },
+                        magicType: {
+                            show : true,
+                            title : {
+                                line : '动态类型切换-折线图',
+                                bar : '动态类型切换-柱形图',
+                                stack : '动态类型切换-堆积',
+                            },
+                            type : ['line', 'bar', 'stack']
+                        },
+                        restore : {
+                            show : true,
+                            title : '还原',
+                            color : 'black'
+                        },
+                        saveAsImage : {
+                            show : true,
+                            title : '保存为图片',
+                            type : 'jpeg',
+                            lang : ['点击本地保存']
+                        },
+                    }
+                },
+                dataZoom : {
+                    show : true,
+                    realtime : true,
+                    y:320,
+                    start : 0,
+                    end : 999
+                },
+                xAxis: {
+                    type: 'category',
+                    //boundaryGap: false,
+                    data: servers
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [
+                    {
+                        name:'CPU使用率',
+                        type:'bar',
+                        data:cpuUse,
+                        itemStyle : {
+                            normal : {
+                                color:'#2e6da4',
+                                lineStyle:{
+                                    color:'#2e6da4'
+                                }
+                            }
+                        },
+                        animationDelay: function (idx) {
+                            return idx * 1;
+                        }
+                    }
+                ],
+                animationEasing: 'elasticOut',
+                animationDelayUpdate: function (idx) {
+                    return idx * 1;
+                }
+            };
+            echarts.init(document.getElementById("cpuTongji")).setOption(option);
+
+            option = {
+                title: {
+                    text: '内存使用情况统计（单位: MB）',
+                    subtext: '更新时间：' + updateTime
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data:['已使用内存','空闲内存','可用内存']
+                },
+                grid: {
+                    left: '1%',
+                    right: '0%',
+                    bottom: '10%',
+                    containLabel: true
+                },
+                toolbox: {
+                    show : true,
+                    orient: 'horizontal',      // 布局方式，默认为水平布局，可选为：
+                    x: 'right',                // 水平安放位置，默认为全图右对齐，可选为：
+                    y: 'top',                  // 垂直安放位置，默认为全图顶端，可选为：
+                    color : ['#1e90ff','#22bb22','#4b0082','#d2691e'],
+                    backgroundColor: 'rgba(0,0,0,0)', // 工具箱背景颜色
+                    borderColor: '#ccc',       // 工具箱边框颜色
+                    borderWidth: 0,            // 工具箱边框线宽，单位px，默认为0（无边框）
+                    padding: 5,                // 工具箱内边距，单位px，默认各方向内边距为5，
+                    showTitle: true,
+                    feature : {
+                        dataZoom : {
+                            show : true,
+                            title : {
+                                dataZoom : '区域缩放',
+                                dataZoomReset : '区域缩放-后退'
+                            }
+                        },
+                        magicType: {
+                            show : true,
+                            title : {
+                                line : '动态类型切换-折线图',
+                                bar : '动态类型切换-柱形图',
+                                stack : '动态类型切换-堆积',
+                            },
+                            type : ['line', 'bar', 'stack']
+                        },
+                        restore : {
+                            show : true,
+                            title : '还原',
+                            color : 'black'
+                        },
+                        saveAsImage : {
+                            show : true,
+                            title : '保存为图片',
+                            type : 'jpeg',
+                            lang : ['点击本地保存']
+                        },
+                    }
+                },
+                dataZoom : {
+                    show : true,
+                    realtime : true,
+                    y:320,
+                    start : 0,
+                    end : 999
+                },
+                xAxis: {
+                    type: 'category',
+                    //boundaryGap: false,
+                    data: servers
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [
+                    {
+                        name:'已使用内存',
+                        type:'bar',
+                        data:memoryUsed,
+                        itemStyle : {
+                            normal : {
+                                color:'#d43f3a',
+                                lineStyle:{
+                                    color:'#d43f3a'
+                                }
+                            }
+                        },
+                        animationDelay: function (idx) {
+                            return idx * 1;
+                        }
+                    },
+                    {
+                        name:'空闲内存',
+                        type:'bar',
+                        data:memoryFree,
+                        itemStyle : {
+                            normal : {
+                                color:'#2e6da4',
+                                lineStyle:{
+                                    color:'#2e6da4'
+                                }
+                            }
+                        },
+                        animationDelay: function (idx) {
+                            return idx * 1 + 100;
+                        }
+                    },
+                    {
+                        name:'可用内存',
+                        type:'bar',
+                        data:memoryAvail,
+                        itemStyle : {
+                            normal : {
+                                color:'#46b8da',
+                                lineStyle:{
+                                    color:'#46b8da'
+                                }
+                            }
+                        },
+                        animationDelay: function (idx) {
+                            return idx * 1 + 200;
+                        }
+                    }
+                ],
+                animationEasing: 'elasticOut',
+                animationDelayUpdate: function (idx) {
+                    return idx * 1;
+                }
+            };
+            echarts.init(document.getElementById("memTongji")).setOption(option);
+
+            option = {
+                title: {
+                    text: '磁盘使用情况统计（单位: GB）',
+                    subtext: '更新时间：' + updateTime
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data:['已使用空间']
+                },
+                grid: {
+                    left: '1%',
+                    right: '0%',
+                    bottom: '10%',
+                    containLabel: true
+                },
+                toolbox: {
+                    show : true,
+                    orient: 'horizontal',      // 布局方式，默认为水平布局，可选为：
+                    x: 'right',                // 水平安放位置，默认为全图右对齐，可选为：
+                    y: 'top',                  // 垂直安放位置，默认为全图顶端，可选为：
+                    color : ['#1e90ff','#22bb22','#4b0082','#d2691e'],
+                    backgroundColor: 'rgba(0,0,0,0)', // 工具箱背景颜色
+                    borderColor: '#ccc',       // 工具箱边框颜色
+                    borderWidth: 0,            // 工具箱边框线宽，单位px，默认为0（无边框）
+                    padding: 5,                // 工具箱内边距，单位px，默认各方向内边距为5，
+                    showTitle: true,
+                    feature : {
+                        dataZoom : {
+                            show : true,
+                            title : {
+                                dataZoom : '区域缩放',
+                                dataZoomReset : '区域缩放-后退'
+                            }
+                        },
+                        magicType: {
+                            show : true,
+                            title : {
+                                line : '动态类型切换-折线图',
+                                bar : '动态类型切换-柱形图',
+                                stack : '动态类型切换-堆积',
+                            },
+                            type : ['line', 'bar', 'stack']
+                        },
+                        restore : {
+                            show : true,
+                            title : '还原',
+                            color : 'black'
+                        },
+                        saveAsImage : {
+                            show : true,
+                            title : '保存为图片',
+                            type : 'jpeg',
+                            lang : ['点击本地保存']
+                        },
+                    }
+                },
+                dataZoom : {
+                    show : true,
+                    realtime : true,
+                    y:320,
+                    start : 0,
+                    end : 999
+                },
+                xAxis: {
+                    type: 'category',
+                    //boundaryGap: false,
+                    data: servers
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [
+                    {
+                        name:'已使用空间',
+                        type:'bar',
+                        data:diskUsed,
+                        itemStyle : {
+                            normal : {
+                                color:'#2e6da4',
+                                lineStyle:{
+                                    color:'#2e6da4'
+                                }
+                            }
+                        },
+                        animationDelay: function (idx) {
+                            return idx * 1;
+                        }
+                    }
+                ],
+                animationEasing: 'elasticOut',
+                animationDelayUpdate: function (idx) {
+                    return idx * 1;
+                }
+            };
+            echarts.init(document.getElementById("diskTongji")).setOption(option);
+
+
+            option = {
+                title: {
+                    text: '系统负载统计',
+                    subtext: '更新时间：' + updateTime
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data:['1分钟平均负载','5分钟平均负载','15分钟平均负载']
+                },
+                grid: {
+                    left: '1%',
+                    right: '0%',
+                    bottom: '10%',
+                    containLabel: true
+                },
+                toolbox: {
+                    show : true,
+                    orient: 'horizontal',      // 布局方式，默认为水平布局，可选为：
+                    x: 'right',                // 水平安放位置，默认为全图右对齐，可选为：
+                    y: 'top',                  // 垂直安放位置，默认为全图顶端，可选为：
+                    color : ['#1e90ff','#22bb22','#4b0082','#d2691e'],
+                    backgroundColor: 'rgba(0,0,0,0)', // 工具箱背景颜色
+                    borderColor: '#ccc',       // 工具箱边框颜色
+                    borderWidth: 0,            // 工具箱边框线宽，单位px，默认为0（无边框）
+                    padding: 5,                // 工具箱内边距，单位px，默认各方向内边距为5，
+                    showTitle: true,
+                    feature : {
+                        dataZoom : {
+                            show : true,
+                            title : {
+                                dataZoom : '区域缩放',
+                                dataZoomReset : '区域缩放-后退'
+                            }
+                        },
+                        magicType: {
+                            show : true,
+                            title : {
+                                line : '动态类型切换-折线图',
+                                bar : '动态类型切换-柱形图',
+                                stack : '动态类型切换-堆积',
+                            },
+                            type : ['line', 'bar', 'stack']
+                        },
+                        restore : {
+                            show : true,
+                            title : '还原',
+                            color : 'black'
+                        },
+                        saveAsImage : {
+                            show : true,
+                            title : '保存为图片',
+                            type : 'jpeg',
+                            lang : ['点击本地保存']
+                        },
+                    }
+                },
+                dataZoom : {
+                    show : true,
+                    realtime : true,
+                    y:320,
+                    start : 0,
+                    end : 999
+                },
+                xAxis: {
+                    type: 'category',
+                    //boundaryGap: false,
+                    data: servers
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [
+                    {
+                        name:'1分钟平均负载',
+                        type:'bar',
+                        data:load1,
+                        itemStyle : {
+                            normal : {
+                                color:'#d43f3a',
+                                lineStyle:{
+                                    color:'#d43f3a'
+                                }
+                            }
+                        },
+                        animationDelay: function (idx) {
+                            return idx * 1;
+                        }
+                    },
+                    {
+                        name:'5分钟平均负载',
+                        type:'bar',
+                        data:load5,
+                        itemStyle : {
+                            normal : {
+                                color:'#2e6da4',
+                                lineStyle:{
+                                    color:'#2e6da4'
+                                }
+                            }
+                        },
+                        animationDelay: function (idx) {
+                            return idx * 1 + 100;
+                        }
+                    },
+                    {
+                        name:'15分钟平均负载',
+                        type:'bar',
+                        data:load15,
+                        itemStyle : {
+                            normal : {
+                                color:'#46b8da',
+                                lineStyle:{
+                                    color:'#46b8da'
+                                }
+                            }
+                        },
+                        animationDelay: function (idx) {
+                            return idx * 1 + 200;
+                        }
+                    }
+                ],
+                animationEasing: 'elasticOut',
+                animationDelayUpdate: function (idx) {
+                    return idx * 1;
+                }
+            };
+            echarts.init(document.getElementById("loadAverageTongji")).setOption(option);
+
+
+            option = {
+                title: {
+                    text: '网络流量统计（单位: KB/s）',
+                    subtext: '更新时间：' + updateTime
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data:['入流量','出流量']
+                },
+                grid: {
+                    left: '1%',
+                    right: '0%',
+                    bottom: '10%',
+                    containLabel: true
+                },
+                toolbox: {
+                    show : true,
+                    orient: 'horizontal',      // 布局方式，默认为水平布局，可选为：
+                    x: 'right',                // 水平安放位置，默认为全图右对齐，可选为：
+                    y: 'top',                  // 垂直安放位置，默认为全图顶端，可选为：
+                    color : ['#1e90ff','#22bb22','#4b0082','#d2691e'],
+                    backgroundColor: 'rgba(0,0,0,0)', // 工具箱背景颜色
+                    borderColor: '#ccc',       // 工具箱边框颜色
+                    borderWidth: 0,            // 工具箱边框线宽，单位px，默认为0（无边框）
+                    padding: 5,                // 工具箱内边距，单位px，默认各方向内边距为5，
+                    showTitle: true,
+                    feature : {
+                        dataZoom : {
+                            show : true,
+                            title : {
+                                dataZoom : '区域缩放',
+                                dataZoomReset : '区域缩放-后退'
+                            }
+                        },
+                        magicType: {
+                            show : true,
+                            title : {
+                                line : '动态类型切换-折线图',
+                                bar : '动态类型切换-柱形图',
+                                stack : '动态类型切换-堆积',
+                            },
+                            type : ['line', 'bar', 'stack']
+                        },
+                        restore : {
+                            show : true,
+                            title : '还原',
+                            color : 'black'
+                        },
+                        saveAsImage : {
+                            show : true,
+                            title : '保存为图片',
+                            type : 'jpeg',
+                            lang : ['点击本地保存']
+                        },
+                    }
+                },
+                dataZoom : {
+                    show : true,
+                    realtime : true,
+                    y:320,
+                    start : 0,
+                    end : 999
+                },
+                xAxis: {
+                    type: 'category',
+                    //boundaryGap: false,
+                    data: servers
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [
+                    {
+                        name:'入流量',
+                        type:'bar',
+                        data:netIn,
+                        itemStyle : {
+                            normal : {
+                                color:'#46b8da',
+                                lineStyle:{
+                                    color:'#46b8da'
+                                }
+                            }
+                        },
+                        animationDelay: function (idx) {
+                            return idx * 1;
+                        }
+                    },
+                    {
+                        name:'出流量',
+                        type:'bar',
+                        data:netOut,
+                        itemStyle : {
+                            normal : {
+                                color:'#2e6da4',
+                                lineStyle:{
+                                    color:'#2e6da4'
+                                }
+                            }
+                        },
+                        animationDelay: function (idx) {
+                            return idx * 1 + 100;
+                        }
+                    }
+                ],
+                animationEasing: 'elasticOut',
+                animationDelayUpdate: function (idx) {
+                    return idx * 1;
+                }
+            };
+            echarts.init(document.getElementById("netTongji")).setOption(option);
+        }
+    });
+
+    $.ajax({
+        url:"/page/fan",
+        type:"POST",
+        success:function(data){
+            var dateTime = [];
+            var fan2 = [];
+            var fan3 = [];
+            var fan4 = [];
+            var fan5 = [];
+            $.each(data[0],function(i,n){
+                dateTime.push(n.dateTime);
+                fan2.push(n.state);
+            });
+            $.each(data[1],function(i,n){
+                fan3.push(n.state);
+            });
+            $.each(data[2],function(i,n){
+                fan4.push(n.state);
+            });
+            $.each(data[3],function(i,n){
+                fan5.push(n.state);
+            });
+            var option = {
+                title: {
+                    text: "风扇开启情况统计",
+                    subtext:''
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data:["fan2","fan3","fan4","fan5"]
+                },
+                grid: {
+                    left: '1%',
+                    right: '0%',
+                    bottom: '10%',
+                    containLabel: true
+                },
+                toolbox: {
+                    show : true,
+                    orient: 'horizontal',      // 布局方式，默认为水平布局，可选为：
+                    x: 'right',                // 水平安放位置，默认为全图右对齐，可选为：
+                    y: 'top',                  // 垂直安放位置，默认为全图顶端，可选为：
+                    color : ['#1e90ff','#22bb22','#4b0082','#d2691e'],
+                    backgroundColor: 'rgba(0,0,0,0)', // 工具箱背景颜色
+                    borderColor: '#ccc',       // 工具箱边框颜色
+                    borderWidth: 0,            // 工具箱边框线宽，单位px，默认为0（无边框）
+                    padding: 5,                // 工具箱内边距，单位px，默认各方向内边距为5，
+                    showTitle: true,
+                    feature : {
+                        dataZoom : {
+                            show : true,
+                            title : {
+                                dataZoom : '区域缩放',
+                                dataZoomReset : '区域缩放-后退'
+                            }
+                        },
+                        magicType: {
+                            show : true,
+                            title : {
+                                line : '动态类型切换-折线图',
+                                bar : '动态类型切换-柱形图',
+                                stack : '动态类型切换-堆积',
+                            },
+                            type : ['line', 'bar', 'stack']
+                        },
+                        restore : {
+                            show : true,
+                            title : '还原',
+                            color : 'black'
+                        },
+                        saveAsImage : {
+                            show : true,
+                            title : '保存为图片',
+                            type : 'jpeg',
+                            lang : ['点击本地保存']
+                        },
+                    }
+                },
+                dataZoom : {
+                    show : true,
+                    realtime : true,
+                    y:620,
+                    start : 0,
+                    end : 999
+                },
+                xAxis: {
+                    type: 'category',
+                    data: dateTime
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [
+                    {
+                        name:'fan2',
+                        type:'line',
+                        data:fan2,
+                        itemStyle : {
+                            normal : {
+                                color:'#46b8da',
+                                lineStyle:{
+                                    color:'#46b8da'
+                                }
+                            }
+                        },
+                        animationDelay: function (idx) {
+                            return idx * 1 + 100;
+                        }
+                    },{
+                        name:'fan3',
+                        type:'line',
+                        data:fan3,
+                        itemStyle : {
+                            normal : {
+                                color:'#2e6da4',
+                                lineStyle:{
+                                    color:'#2e6da4'
+                                }
+                            }
+                        },
+                        animationDelay: function (idx) {
+                            return idx * 1 + 200;
+                        }
+                    },{
+                        name:'fan4',
+                        type:'line',
+                        data:fan4,
+                        itemStyle : {
+                            normal : {
+                                color:'#d43f3a',
+                                lineStyle:{
+                                    color:'#d43f3a'
+                                }
+                            }
+                        },
+                        animationDelay: function (idx) {
+                            return idx * 1 + 300;
+                        }
+                    },{
+                        name:'fan5',
+                        type:'line',
+                        data:fan5,
+                        itemStyle : {
+                            normal : {
+                                color:'#4cae4c',
+                                lineStyle:{
+                                    color:'#4cae4c'
+                                }
+                            }
+                        },
+                        animationDelay: function (idx) {
+                            return idx * 1 + 400;
+                        }
+                    }
+                ],
+                animationEasing: 'elasticOut',
+                animationDelayUpdate: function (idx) {
+                    return idx * 1 + 100;
+                }
+            };
+            echarts.init(document.getElementById("fanTongji")).setOption(option);
+        }
+    });
+</script>
+</html>
