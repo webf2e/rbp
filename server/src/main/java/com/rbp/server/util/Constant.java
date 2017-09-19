@@ -16,4 +16,6 @@ public class Constant {
     public static Map<String,Long> serverTimeMap = new ConcurrentHashMap<>();
 
     public static CuratorFramework curatorFramework = null;
+
+    public static boolean startFan = false;
 }

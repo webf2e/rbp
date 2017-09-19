@@ -17,9 +17,7 @@
             <!-- Nav tabs -->
             <ul class="nav nav-tabs" role="tablist">
                 <li role="presentation" class="active"><a href="#fan" aria-controls="fan" role="tab" data-toggle="tab">风扇控制</a></li>
-                <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">消息发送</a></li>
-                <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>
-                <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li>
+                <li role="presentation"><a href="#message" aria-controls="profile" role="tab" data-toggle="tab">消息发送</a></li>
             </ul>
 
             <!-- Tab panes -->
@@ -27,7 +25,7 @@
                 <div role="tabpanel" class="tab-pane active" id="fan">
 
                 </div>
-                <div role="tabpanel" class="tab-pane" id="profile">
+                <div role="tabpanel" class="tab-pane" id="message">
                     <input id="message" class="form-control" width="100%"/>
                     <select id="messageTypeSelect" class="form-control">
                         <option value="message">文本</option>
@@ -55,16 +53,83 @@
             $.each(data,function(i,n){
                 table += "<tr><td>"+n+"</td><td><button onclick=\"openFan('"+n+"')\" class='btn btn-danger'>开启</button><button onclick=\"closeFan('"+n+"')\" class='btn btn-primary'>关闭</button></td></tr>";
             });
-            table += "</table>";
+            table += "</table><hr/><button class=\"btn btn-primary\" onclick=\"openAll()\">全部开启</button><button class=\"btn btn-danger\" onclick=\"closeAll()\">全部关闭</button>";
             $("#fan").html(table);
         }
     });
     function openFan(fanName){
-        alert("open:" + fanName);
+        $.ajax({
+            url:"/config/operateFans",
+            data:"fanName="+fanName+"&state=start",
+            type:"POST",
+            success:function(data){
+                if(data == ""){
+                    location.href="/login.html?gb=config.html";
+                    return;
+                }
+                if(data == "OK"){
+                    alert("消息已发出");
+                }else{
+                    alert(data);
+                }
+            }
+        });
+    }
+    function openAll(){
+        $.ajax({
+            url:"/config/operateFans",
+            data:"fanName=all&state=start",
+            type:"POST",
+            success:function(data){
+                if(data == ""){
+                    location.href="/login.html?gb=config.html";
+                    return;
+                }
+                if(data == "OK"){
+                    alert("消息已发出");
+                }else{
+                    alert(data);
+                }
+            }
+        });
+    }
+    function closeAll(){
+        $.ajax({
+            url:"/config/operateFans",
+            data:"fanName=all&state=stop",
+            type:"POST",
+            success:function(data){
+                if(data == ""){
+                    location.href="/login.html?gb=config.html";
+                    return;
+                }
+                if(data == "OK"){
+                    alert("消息已发出");
+                }else{
+                    alert(data);
+                }
+            }
+        });
     }
     function closeFan(fanName){
-        alert("close:" + fanName);
+        $.ajax({
+            url:"/config/operateFans",
+            data:"fanName="+fanName+"&state=stop",
+            type:"POST",
+            success:function(data){
+                if(data == ""){
+                    location.href="/login.html?gb=config.html";
+                    return;
+                }
+                if(data == "OK"){
+                    alert("消息已发出");
+                }else{
+                    alert(data);
+                }
+            }
+        });
     }
+
     $("#sendMessageBtn").click(function(){
         $.ajax({
             url:"/rbp/sendMessage",

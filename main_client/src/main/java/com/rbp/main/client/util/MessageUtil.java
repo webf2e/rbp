@@ -34,5 +34,13 @@ public class MessageUtil {
                 e.printStackTrace();
             }
         }
+
+        if(message.getType().equals("url")){
+            try{
+                WebUtil.get(URLDecoder.decode(message.getContent(),"UTF-8"));
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
     }
 }

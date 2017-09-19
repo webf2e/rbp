@@ -98,6 +98,9 @@ public class RbpController {
             }else{
                 Constant.fanStatMap.put(serverName,0);
             }
+            if(Constant.startFan){
+                Constant.fanStatMap.clear();
+            }
             if(Constant.fanStatMap.size() == 5){
                 //判断是否开启风扇
                 Set<String> fanStats = Constant.fanStatMap.keySet();

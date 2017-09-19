@@ -63,6 +63,29 @@ public class MessageService {
         }
     }
 
+    public void setUrlMessage(String url){
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        long timeStramp = System.currentTimeMillis();
+        Message msg = new Message();
+        msg.setDateTime(format.format(timeStramp));
+        msg.setTimestramp(timeStramp);
+        try{
+            msg.setContent(url);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        msg.setType("url");
+        insert(msg);
+        String messageJson = null;
+        try{
+            messageJson = URLEncoder.encode(new Gson().toJson(msg),"UTF-8");
+            //messageJson
+            zookeeperService.createNewZnode(baseNode+"/message",messageJson,"PERSISTENT_SEQUENTIAL");
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
     public void setImgMessage(String message){
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         long timeStramp = System.currentTimeMillis();
