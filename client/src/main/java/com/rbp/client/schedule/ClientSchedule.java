@@ -134,7 +134,7 @@ public class ClientSchedule {
     /**
      * 备份SD
      */
-    @Scheduled(cron = "0 0 0 * * ?}")
+    @Scheduled(cron = "0 0 22 * * ?}")
     public void backUpSDCard(){
         //备份SD
         Date date = new Date();
