@@ -5,13 +5,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.net.URLEncoder;
 import java.util.List;
 
 /**
  * Created by liuwenbin on 2017/8/29.
  */
 
+/**
+ * 项目初始化
+ */
 @Service
 public class InitService {
 
@@ -30,7 +32,7 @@ public class InitService {
     @PostConstruct
     public void init(){
         new Thread(() -> {
-            //上传信息
+            //上传客户端信息
             Constant.ip = IpUtil.getIp();
             String teamviewerId = getTeamviewerId();
             String url = interfaceHost + "rbp/info?sn=" + rbpName
@@ -44,6 +46,10 @@ public class InitService {
         }).start();
     }
 
+    /**
+     * 获取teamviewer的id
+     * @return
+     */
     private String getTeamviewerId(){
         String id = "";
         try{

@@ -7,10 +7,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by liuwenbin on 2017/8/29.
+ * 执行Shell
  */
 public class ShellUtil {
 
+    /**
+     * 执行shell
+     * @param shell shell语句
+     * @return
+     * @throws Exception
+     */
     public static List<String> run(String shell) throws Exception {
         List<String> result = new ArrayList<>();
         Process process = Runtime.getRuntime().exec(shell);

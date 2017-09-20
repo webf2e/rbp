@@ -3,10 +3,14 @@ package com.rbp.client.util;
 import java.util.List;
 
 /**
- * Created by liuwenbin on 2017/9/2.
+ * nas操作类
  */
 public class NasUtil {
 
+    /**
+     * 判断nas路径是否存在
+     * @return
+     */
     public static boolean isExistNasPath(){
         try{
             List<String> strings = ShellUtil.run("df -h");
@@ -21,6 +25,9 @@ public class NasUtil {
         return false;
     }
 
+    /**
+     * 创建nas链接
+     */
     public static void makeNasLink(){
         try{
             ShellUtil.run("sudo mount -t cifs -o username=liuwbnas,password=54liuWENBIN. //192.168.1.6/home/raspberrypi /root/nas &");

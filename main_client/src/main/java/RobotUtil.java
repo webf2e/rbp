@@ -1,9 +1,9 @@
 import java.awt.*;
-import java.awt.datatransfer.*;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 
 /**
- * Created by liuwenbin on 2017/9/11.
+ * 发送文字qq消息
  */
 public class RobotUtil {
 
@@ -74,6 +74,10 @@ public class RobotUtil {
 
     }
 
+    /**
+     * 保存到粘贴板
+     * @param refContent
+     */
     public static void setSystemClipboard(String refContent){
         String vc = refContent.trim();
         StringSelection ss = new StringSelection(vc);

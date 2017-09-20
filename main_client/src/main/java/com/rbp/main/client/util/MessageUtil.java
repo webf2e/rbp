@@ -1,6 +1,5 @@
 package com.rbp.main.client.util;
 
-import com.google.gson.Gson;
 import com.rbp.main.client.bean.Message;
 
 import java.net.URLDecoder;
@@ -14,6 +13,7 @@ public class MessageUtil {
     private static SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public static void send(Message message){
+        //发送文本消息
         if(message.getType().equals("message")){
             try{
                 QQUtil.sendMessage(URLDecoder.decode(message.getContent(),"UTF-8")+"|消息时间: " + dateTimeFormat.format(message.getTimestramp()));
@@ -21,7 +21,7 @@ public class MessageUtil {
                 e.printStackTrace();
             }
         }
-
+        //发送图片消息
         if(message.getType().equals("image")){
             try{
                 //先下载图片
@@ -34,7 +34,7 @@ public class MessageUtil {
                 e.printStackTrace();
             }
         }
-
+        //请求url
         if(message.getType().equals("url")){
             try{
                 WebUtil.get(URLDecoder.decode(message.getContent(),"UTF-8"));

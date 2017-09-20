@@ -9,6 +9,10 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * Created by liuwenbin on 2017/9/5.
  */
+
+/**
+ * 风扇控制的controller
+ */
 @RestController
 @RequestMapping("/fan")
 public class FanController {

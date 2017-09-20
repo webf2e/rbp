@@ -2,7 +2,14 @@ package com.rbp.client.util;
 
 import java.util.List;
 
+/**
+ * 获取ip地址
+ */
 public class IpUtil {
+    /**
+     * 获取IP
+     * @return
+     */
     public static String getIp() {
         try{
             List<String> contents = ShellUtil.run("ifconfig");

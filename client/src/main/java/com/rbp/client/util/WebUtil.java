@@ -6,7 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * Created by liuwenbin on 2017/8/31.
+ * web访问
  */
 public class WebUtil {
 

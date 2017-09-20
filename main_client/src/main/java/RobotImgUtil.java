@@ -11,10 +11,14 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Created by liuwenbin on 2017/9/12.
+ * 发送qq图片消息
  */
 public class RobotImgUtil {
 
+    /**
+     * 讲图片复制到粘贴板中
+     * @param image
+     */
     public static void setImage(Image image) {
         Images imgSel = new Images(image);
         //设置

@@ -3,6 +3,10 @@ package com.rbp.main.client.bean;
 /**
  * Created by liuwenbin on 2017/9/11.
  */
+
+/**
+ * 消息类
+ */
 public class Message implements Comparable<Message>{
 
     private String _id;

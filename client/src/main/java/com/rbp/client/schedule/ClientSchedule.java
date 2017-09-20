@@ -13,6 +13,10 @@ import java.util.List;
 /**
  * Created by liuwenbin on 2017/8/29.
  */
+
+/**
+ * 客户端的定时任务
+ */
 @Component
 public class ClientSchedule {
 
@@ -39,7 +43,6 @@ public class ClientSchedule {
             LogUtil.log("开始获取系统状态");
             List<String> lines = ShellUtil.run("sh "+projectPath+"bin/pistat_java.sh");
             String result = lines.get(0);
-            //String result = "62.3|1.8|62.3|949.0|551.0|76.0|329.0|30G|4.5G|16%";
             result = result.replaceAll("%","");
             //获取loadaverage
             try{

@@ -7,9 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by liuwenbin on 2017/8/31.
+ * 文件操作
  */
 public class FileUtil {
+    /**
+     * 文件读取
+     * @param filePath 文件路径
+     * @return
+     * @throws Exception
+     */
     public static List<String> read(String filePath) throws Exception{
         List<String> list = new ArrayList<String>();
         BufferedReader bufferedReader = new BufferedReader(new FileReader(new File(filePath)));

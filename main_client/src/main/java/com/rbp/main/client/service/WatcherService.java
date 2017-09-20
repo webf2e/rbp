@@ -1,19 +1,18 @@
 package com.rbp.main.client.service;
 
-import java.net.URLDecoder;
-import java.text.SimpleDateFormat;
-
 import com.google.gson.Gson;
 import com.rbp.main.client.bean.Message;
 import com.rbp.main.client.util.Constant;
 import com.rbp.main.client.util.MessageUtil;
-import com.rbp.main.client.util.QQUtil;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
 
 @Service
 public class WatcherService {
@@ -46,8 +45,10 @@ public class WatcherService {
 					System.out.println(content);
 					System.out.println("child_add");
 					//处理逻辑
+					//发送qq消息
 					Message message = new Gson().fromJson(content,Message.class);
 					MessageUtil.send(message);
+					//删除节点
 					zookeeperService.delZnodeContainsChild(event.getData().getPath());
 				}else if(event.getType() == PathChildrenCacheEvent.Type.CHILD_UPDATED){
 					System.out.println("child_update");

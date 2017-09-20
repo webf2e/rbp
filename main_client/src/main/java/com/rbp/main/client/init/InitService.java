@@ -13,6 +13,9 @@ import javax.annotation.PostConstruct;
  * Created by liuwenbin on 2017/8/29.
  */
 
+/**
+ * 系统初始化
+ */
 @Service
 public class InitService {
 
@@ -30,6 +33,7 @@ public class InitService {
 
     @PostConstruct
     public void init() {
+        //连接zookeeper, 创建根节点,并监控
         try{
             zookeeperService.getConnnection(zookeeperUrl);
             Stat stat = zookeeperService.getZnodeStat(baseNode);
